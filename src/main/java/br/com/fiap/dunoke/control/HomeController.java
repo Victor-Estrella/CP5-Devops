@@ -24,7 +24,7 @@ public class HomeController {
 
     @GetMapping({"/", "/index"})
     public ModelAndView index() {
-        ModelAndView mv = new ModelAndView("/home/index");
+        ModelAndView mv = new ModelAndView("home/index");
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<Usuario> op = repU.findByUsername(auth.getName());
