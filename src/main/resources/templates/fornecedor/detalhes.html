@@ -21,12 +21,14 @@
         <div class="col-6">
             <h3>Produtos</h3>
             <table class="table table-sm" th:if="${fornecedor.produtos != null and !fornecedor.produtos.isEmpty()}">
-                <thead><tr><th>Nome</th><th>Preço</th><th>Cadastro</th></tr></thead>
+                <thead><tr><th>Nome</th><th>Preço</th><th>Cadastro</th><th colspan="2">Ações</th></tr></thead>
                 <tbody>
                 <tr th:each="p : ${fornecedor.produtos}">
                     <td th:text="${p.nome}"></td>
                     <td th:text="${#numbers.formatDecimal(p.preco,1,'POINT',2,'COMMA')}"></td>
                     <td th:text="${p.dataCadastro}"></td>
+                    <td><a class="btn btn-sm btn-outline-primary" th:href="@{|/fornecedor/${fornecedor.id}/produto/editar/${p.id}|}">Editar</a></td>
+                    <td><a class="btn btn-sm btn-outline-danger" th:href="@{|/fornecedor/${fornecedor.id}/produto/remover/${p.id}|}" onclick="return confirm('Remover este produto?')">Remover</a></td>
                 </tr>
                 </tbody>
             </table>
