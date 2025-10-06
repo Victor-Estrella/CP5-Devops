@@ -2,20 +2,20 @@
 set -e
 
 # VARIÁVEIS #
-RESOURCE_GROUP_NAME="rg-universidade-fiap"
-WEBAPP_NAME="universidade-fiap-app"
-APP_SERVICE_PLAN="plan-universidade-fiap"
+RESOURCE_GROUP_NAME="rg-dunoke"
+WEBAPP_NAME="dunoke-app"
+APP_SERVICE_PLAN="plan-dunoke"
 LOCATION="brazilsouth"
 RUNTIME="JAVA:17-java17"
 
-RG_DB_NAME="rg-universidade-fiap-db"
-DB_USERNAME="user-universidade"
-DB_NAME="db-universidade-fiap"
-DB_PASSWORD="UniversidadeF1ap!2025#"
-SERVER_NAME="sql-universidade-fiap"
+RG_DB_NAME="rg-dunoke-db"
+DB_USERNAME="user-dunoke"
+DB_NAME="db-dunoke"
+DB_PASSWORD="DunokeF1ap!2025#"
+SERVER_NAME="sql-dunoke"
 
-APP_INSIGHTS_NAME="ai-universidade-fiap"
-GITHUB_REPO_NAME="Victor-Estrella/SmartMottu-Devops"
+APP_INSIGHTS_NAME="ai-dunoke"
+GITHUB_REPO_NAME="Victor-Estrella/CP5-Devops"
 BRANCH="main"
 
 
@@ -57,37 +57,20 @@ az sql server firewall-rule create \
 echo "⚠️  Firewall 0.0.0.0/255.255.255.255 habilitado somente para DESENVOLVIMENTO. Restrinja para IPs específicos ou use Private Endpoint em produção."
 
 # CRIAÇÃO DE OBJETOS E DADOS INICIAIS NO BANCO
-echo "Criando tabelas e dados iniciais (Universidade FIAP)..."
+echo "Criando tabelas e dados iniciais (modelo atual dunoke)..."
 sqlcmd -S "$SERVER_NAME.database.windows.net" -d "$DB_NAME" -U "$DB_USERNAME" -P "$DB_PASSWORD" -l 60 -N -b <<'EOF'
--- Tabelas principais
-CREATE TABLE pessoa (
-    id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    nome VARCHAR(80) NOT NULL,
-    cpf VARCHAR(14),
-    data_nascimento DATE,
-    nacionalidade VARCHAR(40)
-);
-
-CREATE TABLE discente (
-    id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    id_pessoa BIGINT NOT NULL,
-    rm VARCHAR(6) NOT NULL,
-    status VARCHAR(30),
-    nivel VARCHAR(30),
-    CONSTRAINT fk_discente_pessoa FOREIGN KEY (id_pessoa) REFERENCES pessoa(id)
-);
-
+-- Tabelas conforme entidades atuais (Usuario, Funcao, Fornecedor)
 CREATE TABLE funcao (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    nome VARCHAR(30) NOT NULL
+    nome VARCHAR(30) NOT NULL -- valores: ADMIN, GESTOR, OPERACIONAL, FINANCEIRO, TECNOLOGIA
 );
 
 CREATE TABLE usuario (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    username VARCHAR(80) NOT NULL,
+    username VARCHAR(120) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     img_perfil VARCHAR(255),
-    nome_perfil VARCHAR(120)
+    nome_perfil VARCHAR(255)
 );
 
 CREATE TABLE usuario_funcao_tab (
@@ -98,13 +81,42 @@ CREATE TABLE usuario_funcao_tab (
     CONSTRAINT fk_uf_funcao FOREIGN KEY (id_funcao) REFERENCES funcao(id)
 );
 
--- Inserts básicos
-INSERT INTO funcao (nome) VALUES ('ADMIN');
-INSERT INTO funcao (nome) VALUES ('PROFESSOR');
-INSERT INTO funcao (nome) VALUES ('DISCENTE');
-INSERT INTO usuario (username, senha, img_perfil, nome_perfil) VALUES ('admin', '{noop}admin', NULL, 'Administrador');
-INSERT INTO usuario_funcao_tab (id_usuario, id_funcao)
+CREATE TABLE fornecedor (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    cnpj VARCHAR(30),
+    contato VARCHAR(120),
+    email VARCHAR(180),
+    telefone VARCHAR(40),
+    endereco VARCHAR(255),
+    data_cadastro DATE
+);
+
+-- Inserts básicos idempotentes
+IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='ADMIN') INSERT INTO funcao (nome) VALUES ('ADMIN');
+IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='GESTOR') INSERT INTO funcao (nome) VALUES ('GESTOR');
+IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='OPERACIONAL') INSERT INTO funcao (nome) VALUES ('OPERACIONAL');
+IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='FINANCEIRO') INSERT INTO funcao (nome) VALUES ('FINANCEIRO');
+IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='TECNOLOGIA') INSERT INTO funcao (nome) VALUES ('TECNOLOGIA');
+
+IF NOT EXISTS (SELECT 1 FROM usuario WHERE username='admin')
+  INSERT INTO usuario (username, senha, img_perfil, nome_perfil) VALUES ('admin', '{noop}admin', NULL, 'Administrador');
+
+IF NOT EXISTS (
+  SELECT 1 FROM usuario_funcao_tab uft
+  JOIN usuario u ON u.id = uft.id_usuario
+  JOIN funcao f ON f.id = uft.id_funcao
+  WHERE u.username='admin' AND f.nome='ADMIN')
+BEGIN
+  INSERT INTO usuario_funcao_tab (id_usuario, id_funcao)
     SELECT u.id, f.id FROM usuario u CROSS JOIN funcao f WHERE u.username='admin' AND f.nome='ADMIN';
+END;
+
+IF NOT EXISTS (SELECT 1 FROM fornecedor) BEGIN
+  INSERT INTO fornecedor (nome, cnpj, contato, email, telefone, endereco, data_cadastro) VALUES
+    ('Fornecedor A','12.345.678/0001-90','João Silva','contato@fornecedora.com','(11)99999-0001','Rua A, 123',GETDATE()),
+    ('Fornecedor B','98.765.432/0001-55','Maria Souza','vendas@fornecedorb.com','(11)99999-0002','Av. B, 456',GETDATE());
+END;
 EOF
 
 # APPLICATION INSIGHTS
@@ -165,7 +177,7 @@ if [ "$GITHUB_REPO_NAME" != "organizacao/repositorio" ]; then
         --login-with-github || echo "(Aviso) Não foi possível configurar GitHub Actions automaticamente."
 fi
 
-echo "✅ Deploy (Universidade FIAP) concluído!"
+echo "✅ Deploy concluído!"
 echo "🌐 URL WebApp: https://$WEBAPP_NAME.azurewebsites.net"
 echo "�  Banco SQL Server: $DB_NAME @ $SERVER_NAME.database.windows.net"
 echo "�📊 Application Insights: $APP_INSIGHTS_NAME"

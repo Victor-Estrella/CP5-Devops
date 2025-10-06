@@ -1,7 +1,7 @@
 package br.com.fiap.dunoke.model;
 
 public enum EnumFuncao {
-	
-	ADMIN, COORDENADOR,PROFESSOR,DISCENTE;
+
+	ADMIN, GESTOR, OPERACIONAL, FINANCEIRO, TECNOLOGIA;
 
 }
