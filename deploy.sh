@@ -11,7 +11,7 @@ RUNTIME="JAVA:17-java17"
 RG_DB_NAME="rg-dunoke-db"
 DB_USERNAME="user-dunoke"
 DB_NAME="db-dunoke"
-DB_PASSWORD="DunokeF1ap!2025#"
+DB_PASSWORD="Dun0ke#Pl@t!2025"
 SERVER_NAME="sql-dunoke"
 
 APP_INSIGHTS_NAME="ai-dunoke"
@@ -58,7 +58,6 @@ echo "⚠️  Firewall 0.0.0.0/255.255.255.255 habilitado somente para DESENVOLV
 
 # CRIAÇÃO DE OBJETOS E DADOS INICIAIS NO BANCO
 sqlcmd -S "$SERVER_NAME.database.windows.net" -d "$DB_NAME" -U "$DB_USERNAME" -P "$DB_PASSWORD" -l 60 -N -b <<'EOF'
--- Tabelas conforme entidades atuais (Usuario, Funcao, Fornecedor)
 CREATE TABLE funcao (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     nome VARCHAR(30) NOT NULL -- valores: ADMIN, GESTOR, OPERACIONAL, FINANCEIRO, TECNOLOGIA
@@ -120,11 +119,9 @@ BEGIN
     SELECT u.id, f.id FROM usuario u CROSS JOIN funcao f WHERE u.username='admin' AND f.nome='ADMIN';
 END;
 
-INSERT INTO fornecedor (nome, cnpj, contato, email, telefone, endereco, data_cadastro) VALUES ('Fornecedor A','12.345.678/0001-90','João Silva','contato@fornecedora.com','(11)99999-0001','Rua A, 123',GETDATE()),
+INSERT INTO fornecedor (nome, cnpj, contato, email, telefone, endereco, data_cadastro) VALUES ('Fornecedor A','12.345.678/0001-90','João Silva','contato@fornecedora.com','(11)99999-0001','Rua A, 123',GETDATE());
 INSERT INTO fornecedor (nome, cnpj, contato, email, telefone, endereco, data_cadastro) VALUES ('Fornecedor B','98.765.432/0001-55','Maria Souza','vendas@fornecedorb.com','(11)99999-0002','Av. B, 456',GETDATE());
 
-INSERT INTO produto (nome, descricao, preco, data_cadastro, id_fornecedor) VALUES ('Produto Exemplo 1','Descrição exemplo 1', 100.00, GETDATE(), @fid),
-INSERT INTO produto (nome, descricao, preco, data_cadastro, id_fornecedor) VALUES ('Produto Exemplo 2','Descrição exemplo 2', 250.50, GETDATE(), @fid);
 EOF
 
 # APPLICATION INSIGHTS
@@ -168,9 +165,6 @@ az webapp config appsettings set \
             SPRING_DATASOURCE_USERNAME=$DB_USERNAME \
             SPRING_DATASOURCE_PASSWORD=$DB_PASSWORD \
             SPRING_DATASOURCE_URL=$SPRING_DATASOURCE_URL \
-            SPRING_DATASOURCE_DRIVER=com.microsoft.sqlserver.jdbc.SQLServerDriver \
-            SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.SQLServerDialect \
-            SPRING_JPA_HIBERNATE_DDL_AUTO=none 
 
 az webapp restart --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME
 
