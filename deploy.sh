@@ -107,7 +107,7 @@ IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='OPERACIONAL') INSERT INTO funcao
 IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='FINANCEIRO') INSERT INTO funcao (nome) VALUES ('FINANCEIRO');
 IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='TECNOLOGIA') INSERT INTO funcao (nome) VALUES ('TECNOLOGIA');
 
-INSERT INTO usuario (username, senha, img_perfil, nome_perfil) VALUES ('admin', '{noop}admin', NULL, 'Administrador');
+INSERT INTO usuario (username, senha, img_perfil, nome_perfil) VALUES ('admin', '$2a$12$h227p1QzQEB2cIW/BrzZletfr20O0lNDBMYZM0K6z5faY6bJ17kpO', NULL, 'Administrador');
 
 IF NOT EXISTS (
   SELECT 1 FROM usuario_funcao_tab uft
