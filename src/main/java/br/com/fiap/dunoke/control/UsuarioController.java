@@ -33,8 +33,8 @@ public class UsuarioController {
 	
 	@GetMapping("/usuario/novo")
 	public ModelAndView retornarCadUsuario() {
-		
-		ModelAndView mv = new ModelAndView("/usuario/novo");
+		// Removido slash inicial da view para manter padrão
+		ModelAndView mv = new ModelAndView("usuario/novo");
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -52,16 +52,14 @@ public class UsuarioController {
 	}
 	
 	@PostMapping("/insere_usuario")
-	public ModelAndView inserirUsuario(Usuario usuario, @RequestParam(name = "id_funcao") Long id_funcao) {
+	public ModelAndView inserirUsuario(Usuario usuario, @RequestParam(name = "id_funcao", required = false) Long id_funcao) {
 
 		usuario.setSenha(encoder.encode(usuario.getSenha()));
 
 		Set<Funcao> funcoes = new HashSet<Funcao>();
 
 		if (id_funcao != null) {
-
-			funcoes.add(repF.findById(id_funcao).orElse(null));
-
+			repF.findById(id_funcao).ifPresent(funcoes::add);
 		}
 
 		usuario.setFuncoes(funcoes);

@@ -1,53 +1,40 @@
-</body>
-</html>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-
 <head th:replace="~{fragmentos :: cabecalho('Detalhes Fornecedor')}"></head>
-
 <body>
-
-    <form th:replace="~{fragmentos :: form-logout}"></form>
-
-    <div class="container">
-        <div th:replace="~{fragmentos :: saudacoes(${usuario})}"></div>
-
-        <div class="row">
-            <h1 th:text="${fornecedor.nome}">Fornecedor</h1>
+<form th:replace="~{fragmentos :: form-logout}"></form>
+<div class="container">
+    <div th:replace="~{fragmentos :: saudacoes(${usuario})}"></div>
+    <div class="row">
+        <h1 th:text="${fornecedor.nome}">Fornecedor</h1>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p><strong>CNPJ:</strong> <span th:text="${fornecedor.cnpj}"></span></p>
+            <p><strong>Contato:</strong> <span th:text="${fornecedor.contato}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${fornecedor.email}"></span></p>
+            <p><strong>Telefone:</strong> <span th:text="${fornecedor.telefone}"></span></p>
+            <p><strong>Endereço:</strong> <span th:text="${fornecedor.endereco}"></span></p>
+            <a th:href="@{/index}">Voltar</a>
+            <a class="btn btn-sm btn-primary mt-2" th:href="@{|/fornecedor/${fornecedor.id}/produto/novo|}">Novo Produto</a>
         </div>
-        <div class="row">
-            <div class="col-6">
-                <p><strong>CNPJ:</strong> <span th:text="${fornecedor.cnpj}"></span></p>
-                <p><strong>Contato:</strong> <span th:text="${fornecedor.contato}"></span></p>
-                <p><strong>Email:</strong> <span th:text="${fornecedor.email}"></span></p>
-                <p><strong>Telefone:</strong> <span th:text="${fornecedor.telefone}"></span></p>
-                <p><strong>Endereço:</strong> <span th:text="${fornecedor.endereco}"></span></p>
-                <a th:href="@{/index}">Voltar</a>
-                <a class="btn btn-sm btn-primary mt-2" th:href="@{|/fornecedor/${fornecedor.id}/produto/novo|}">Novo Produto</a>
-            </div>
-            <div class="col-6">
-                <h3>Produtos</h3>
-                <table class="table table-sm" th:if="${fornecedor.produtos} != null and !${fornecedor.produtos}.isEmpty()">
-                    <thead><tr><th>Nome</th><th>Preço</th><th>Cadastro</th></tr></thead>
-                    <tbody>
-                    <tr th:each="p : ${fornecedor.produtos}">
-                        <td th:text="${p.nome}"></td>
-                        <td th:text="${#numbers.formatDecimal(p.preco,1,'POINT',2,'COMMA')}"></td>
-                        <td th:text="${p.dataCadastro}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-                <div th:if="${fornecedor.produtos == null or fornecedor.produtos.isEmpty()}">
-                    <em>Nenhum produto cadastrado.</em>
-                </div>
+        <div class="col-6">
+            <h3>Produtos</h3>
+            <table class="table table-sm" th:if="${fornecedor.produtos != null and !fornecedor.produtos.isEmpty()}">
+                <thead><tr><th>Nome</th><th>Preço</th><th>Cadastro</th></tr></thead>
+                <tbody>
+                <tr th:each="p : ${fornecedor.produtos}">
+                    <td th:text="${p.nome}"></td>
+                    <td th:text="${#numbers.formatDecimal(p.preco,1,'POINT',2,'COMMA')}"></td>
+                    <td th:text="${p.dataCadastro}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${fornecedor.produtos == null or fornecedor.produtos.isEmpty()}">
+                <em>Nenhum produto cadastrado.</em>
             </div>
         </div>
     </div>
-
-</body>
-
-</html>
 </div>
-
 </body>
 </html>
