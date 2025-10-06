@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('Editar Usuário')}"></head>
+<body>
+<form th:replace="~{fragmentos :: form-logout}"></form>
+<div class="container">
+  <div th:replace="~{fragmentos :: saudacoes(${usuario_logado})}"></div>
+  <h1>Edição de Usuário</h1>
+  <form th:action="@{|/usuario/editar/${usuario.id}|}" th:object="${usuario}" method="post">
+    <div class="mb-2">
+      <label class="form-label">Username</label>
+      <input type="text" class="form-control" th:field="*{username}" />
+    </div>
+    <div class="mb-2">
+      <label class="form-label">Nova Senha (opcional)</label>
+      <input type="password" class="form-control" th:field="*{senha}" />
+    </div>
+    <div class="mb-2">
+      <label class="form-label">Nome de Perfil</label>
+      <input type="text" class="form-control" th:field="*{nomePerfil}" />
+    </div>
+    <div class="mb-2">
+      <label class="form-label">Imagem de Perfil (URL)</label>
+      <input type="text" class="form-control" th:field="*{imgPerfil}" />
+    </div>
+    <div class="mb-2">
+      <label class="form-label">Função</label>
+      <select class="form-select" name="id_funcao">
+        <option value="" selected>(Nenhuma)</option>
+        <option th:each="f : ${lista_funcoes}" th:value="${f.id}" th:text="${f.nome}" th:selected="${usuario.funcoes.contains(f)}"></option>
+      </select>
+    </div>
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="/usuario/listar" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragmentos :: cabecalho('Lista de Usuários')}"></head>
+<body>
+<form th:replace="~{fragmentos :: form-logout}"></form>
+<div class="container">
+  <div th:replace="~{fragmentos :: saudacoes(${usuario_logado})}"></div>
+  <div class="row">
+    <h1>Usuários</h1>
+    <a class="btn btn-sm btn-success mb-2" href="/usuario/novo">Novo Usuário</a>
+  </div>
+  <div class="row">
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Nome Perfil</th>
+          <th>Funções</th>
+          <th>#</th>
+          <th>#</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="u : ${usuarios}">
+          <td th:text="${u.id}"></td>
+          <td th:text="${u.username}"></td>
+          <td th:text="${u.nomePerfil}"></td>
+          <td>
+            <span th:each="f : ${u.funcoes}" th:text="${f.nome}" class="badge bg-secondary me-1"></span>
+          </td>
+          <td><a class="btn btn-sm btn-primary" th:href="@{|/usuario/editar/${u.id}|}">Editar</a></td>
+          <td><a class="btn btn-sm btn-danger" th:href="@{|/usuario/remover/${u.id}|}" onclick="return confirm('Remover este usuário?')">Remover</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <a href="/index">Voltar</a>
+  </div>
+</div>
+</body>
+</html>
