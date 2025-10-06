@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos :: cabecalho('Editar Fornecedor')}"></head>
+
+<body>
+
+    <form th:replace="~{fragmentos :: form-logout}"></form>
+
+    <div class="container">
+        <div th:replace="~{fragmentos :: saudacoes(${usuario})}"></div>
+
+        <div class="row">
+            <h1>Editar Fornecedor</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-8">
+                <form th:action="@{|/fornecedor/editar/${fornecedor.id}|}" th:object="${fornecedor}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Nome</label>
+                        <input class="form-control" type="text" th:field="*{nome}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">CNPJ</label>
+                        <input class="form-control" type="text" th:field="*{cnpj}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contato</label>
+                        <input class="form-control" type="text" th:field="*{contato}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" type="email" th:field="*{email}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telefone</label>
+                        <input class="form-control" type="text" th:field="*{telefone}" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Endereço</label>
+                        <input class="form-control" type="text" th:field="*{endereco}" />
+                    </div>
+                    <button class="btn btn-primary" type="submit">Salvar</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+</body>
+</html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos :: cabecalho('Detalhes Fornecedor')}"></head>
+
+<body>
+
+    <form th:replace="~{fragmentos :: form-logout}"></form>
+
+    <div class="container">
+        <div th:replace="~{fragmentos :: saudacoes(${usuario})}"></div>
+
+        <div class="row">
+            <h1 th:text="${fornecedor.nome}">Fornecedor</h1>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <p><strong>CNPJ:</strong> <span th:text="${fornecedor.cnpj}"></span></p>
+                <p><strong>Contato:</strong> <span th:text="${fornecedor.contato}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${fornecedor.email}"></span></p>
+                <p><strong>Telefone:</strong> <span th:text="${fornecedor.telefone}"></span></p>
+                <p><strong>Endereço:</strong> <span th:text="${fornecedor.endereco}"></span></p>
+                <a th:href="@{/index}">Voltar</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+</div>
+
+</body>
+</html>

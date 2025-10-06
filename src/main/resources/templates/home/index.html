@@ -1,0 +1,56 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragmentos :: cabecalho('Lista de Fornecedores')}" />
+
+  <body>
+
+	<form th:replace="~{fragmentos :: form-logout}" />
+
+	<div class="container">
+		
+		<div th:replace="~{fragmentos :: saudacoes(${usuario})}" />
+		
+        <div class="row">
+            <h1>Lista de Fornecedores</h1>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">CNPJ</th>
+                            <th scope="col">Contato</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">#</th>
+                            <th scope="col">#</th>
+                            <th scope="col">#</th>
+                        </tr>
+                      </thead>
+                    <tbody>
+                        <tr th:each="f : ${fornecedores}">
+                            <th class="col-2" scope="row" th:text="${f.id}">A</th>
+                            <td class="col-3" th:text="${f.nome}">B</td>
+                            <td class="col-2" th:text="${f.cnpj}">C</td>
+                            <td class="col-2" th:text="${f.contato}">D</td>
+                            <td class="col-2" th:text="${f.email}">E</td>
+                            <td class="col-2"><a th:href="@{|/fornecedor/detalhes/${f.id}|}">Detalhes</a></td>
+                            <td class="col-2"><a th:href="@{|/fornecedor/editar/${f.id}|}">Editar</a></td>
+                            <td class="col-2"><a th:href="@{|/fornecedor/remover/${f.id}|}" onclick="return confirm('Confirma remover este fornecedor?')">Remover</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <a href="/fornecedor/novo">Cadastrar um Novo Fornecedor</a><br>
+            <a href="/usuario/novo">Cadastrar um Novo Usuário</a>
+        </div>
+    </div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+  </body>
+</html>
