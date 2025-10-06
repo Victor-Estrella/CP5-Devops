@@ -47,17 +47,16 @@ az sql db create \
     --service-objective Basic \
     --backup-storage-redundancy Local
 
-# Firewall amplo (DEV APENAS). Para produção troque por IP fixo / VPN.
+# Firewall amplo (DEV APENAS).
 az sql server firewall-rule create \
     --resource-group $RG_DB_NAME \
     --server $SERVER_NAME \
     --name AllowAllDevTEMP \
     --start-ip-address 0.0.0.0 \
     --end-ip-address 255.255.255.255
-echo "⚠️  Firewall 0.0.0.0/255.255.255.255 habilitado somente para DESENVOLVIMENTO. Restrinja para IPs específicos ou use Private Endpoint em produção."
+echo "⚠️  Firewall 0.0.0.0/255.255.255.255 habilitado somente para DESENVOLVIMENTO."
 
 # CRIAÇÃO DE OBJETOS E DADOS INICIAIS NO BANCO
-echo "Criando tabelas e dados iniciais (modelo atual dunoke)..."
 sqlcmd -S "$SERVER_NAME.database.windows.net" -d "$DB_NAME" -U "$DB_USERNAME" -P "$DB_PASSWORD" -l 60 -N -b <<'EOF'
 -- Tabelas conforme entidades atuais (Usuario, Funcao, Fornecedor)
 CREATE TABLE funcao (
@@ -92,6 +91,16 @@ CREATE TABLE fornecedor (
     data_cadastro DATE
 );
 
+CREATE TABLE produto (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    descricao VARCHAR(500),
+    preco DECIMAL(14,2),
+    data_cadastro DATE,
+    id_fornecedor BIGINT NOT NULL,
+    CONSTRAINT fk_produto_fornecedor FOREIGN KEY (id_fornecedor) REFERENCES fornecedor(id)
+);
+
 -- Inserts básicos idempotentes
 IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='ADMIN') INSERT INTO funcao (nome) VALUES ('ADMIN');
 IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='GESTOR') INSERT INTO funcao (nome) VALUES ('GESTOR');
@@ -99,8 +108,7 @@ IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='OPERACIONAL') INSERT INTO funcao
 IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='FINANCEIRO') INSERT INTO funcao (nome) VALUES ('FINANCEIRO');
 IF NOT EXISTS (SELECT 1 FROM funcao WHERE nome='TECNOLOGIA') INSERT INTO funcao (nome) VALUES ('TECNOLOGIA');
 
-IF NOT EXISTS (SELECT 1 FROM usuario WHERE username='admin')
-  INSERT INTO usuario (username, senha, img_perfil, nome_perfil) VALUES ('admin', '{noop}admin', NULL, 'Administrador');
+INSERT INTO usuario (username, senha, img_perfil, nome_perfil) VALUES ('admin', '{noop}admin', NULL, 'Administrador');
 
 IF NOT EXISTS (
   SELECT 1 FROM usuario_funcao_tab uft
@@ -112,11 +120,11 @@ BEGIN
     SELECT u.id, f.id FROM usuario u CROSS JOIN funcao f WHERE u.username='admin' AND f.nome='ADMIN';
 END;
 
-IF NOT EXISTS (SELECT 1 FROM fornecedor) BEGIN
-  INSERT INTO fornecedor (nome, cnpj, contato, email, telefone, endereco, data_cadastro) VALUES
-    ('Fornecedor A','12.345.678/0001-90','João Silva','contato@fornecedora.com','(11)99999-0001','Rua A, 123',GETDATE()),
-    ('Fornecedor B','98.765.432/0001-55','Maria Souza','vendas@fornecedorb.com','(11)99999-0002','Av. B, 456',GETDATE());
-END;
+INSERT INTO fornecedor (nome, cnpj, contato, email, telefone, endereco, data_cadastro) VALUES ('Fornecedor A','12.345.678/0001-90','João Silva','contato@fornecedora.com','(11)99999-0001','Rua A, 123',GETDATE()),
+INSERT INTO fornecedor (nome, cnpj, contato, email, telefone, endereco, data_cadastro) VALUES ('Fornecedor B','98.765.432/0001-55','Maria Souza','vendas@fornecedorb.com','(11)99999-0002','Av. B, 456',GETDATE());
+
+INSERT INTO produto (nome, descricao, preco, data_cadastro, id_fornecedor) VALUES ('Produto Exemplo 1','Descrição exemplo 1', 100.00, GETDATE(), @fid),
+INSERT INTO produto (nome, descricao, preco, data_cadastro, id_fornecedor) VALUES ('Produto Exemplo 2','Descrição exemplo 2', 250.50, GETDATE(), @fid);
 EOF
 
 # APPLICATION INSIGHTS
@@ -166,7 +174,7 @@ az webapp config appsettings set \
 
 az webapp restart --name $WEBAPP_NAME --resource-group $RESOURCE_GROUP_NAME
 
-# (Opcional) Adicionar GitHub Actions para deploy contínuo
+# GitHub Actions para deploy contínuo
 if [ "$GITHUB_REPO_NAME" != "organizacao/repositorio" ]; then
     echo "⚙️  Configurando GitHub Actions (deploy contínuo)..."
     az webapp deployment github-actions add \
@@ -177,9 +185,7 @@ if [ "$GITHUB_REPO_NAME" != "organizacao/repositorio" ]; then
         --login-with-github || echo "(Aviso) Não foi possível configurar GitHub Actions automaticamente."
 fi
 
-echo "✅ Deploy concluído!"
-echo "🌐 URL WebApp: https://$WEBAPP_NAME.azurewebsites.net"
-echo "�  Banco SQL Server: $DB_NAME @ $SERVER_NAME.database.windows.net"
-echo "�📊 Application Insights: $APP_INSIGHTS_NAME"
-echo "ℹ️  Ajuste variáveis ou secrets no pipeline para ambiente produtivo."
-echo "🔐 Lembre de fechar o firewall amplo antes de produção."
+echo "Deploy concluído!"
+echo "URL WebApp: https://$WEBAPP_NAME.azurewebsites.net"
+echo "Banco SQL Server: $DB_NAME @ $SERVER_NAME.database.windows.net"
+echo "Application Insights: $APP_INSIGHTS_NAME"

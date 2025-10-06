@@ -1,10 +1,8 @@
 package br.com.fiap.dunoke.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.time.LocalDate;
 
 @Entity
@@ -22,6 +20,9 @@ public class Fornecedor {
     private String telefone;
     private String endereco;
     private LocalDate dataCadastro;
+
+    @OneToMany(mappedBy = "fornecedor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Produto> produtos = new ArrayList<>();
 
     public Fornecedor() {
     }
@@ -88,5 +89,17 @@ public class Fornecedor {
 
     public void setDataCadastro(LocalDate dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    public List<Produto> getProdudos() { // mantendo compat até corrigir eventual typo se usado em views
+        return produtos;
+    }
+
+    public List<Produto> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos = produtos;
     }
 }
