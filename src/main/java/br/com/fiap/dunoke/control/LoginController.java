@@ -9,7 +9,7 @@ public class LoginController {
 	
 	@GetMapping("/login")
 	public ModelAndView logar() {
-		return new ModelAndView("/login");
+		return new ModelAndView("login");
 	}
 	
 	@GetMapping("/acesso_negado")
